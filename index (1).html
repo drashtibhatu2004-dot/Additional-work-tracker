@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Drashti's Work Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f2ff;
+  --surface: #ffffff;
+  --border: #e2e5f0;
+  --text: #1a1a2e;
+  --text-muted: #5a5f7a;
+  --text-faint: #9399b2;
+  --purple: #7c3aed;
+  --purple-light: #ede9fe;
+  --purple-dark: #5b21b6;
+  --pink: #db2777;
+  --pink-light: #fce7f3;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-brand { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.header-brand span { opacity: 0.7; font-weight: 400; margin: 0 6px; }
+.header-sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+/* MAIN */
+.main { max-width: 1160px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* STAT CARDS */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  border: 1.5px solid transparent;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.12); }
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.stat-card.c-purple::before { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+.stat-card.c-pink::before   { background: linear-gradient(90deg, #db2777, #f472b6); }
+.stat-card.c-teal::before   { background: linear-gradient(90deg, #0d9488, #34d399); }
+.stat-card.c-blue::before   { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.stat-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px;
+}
+.stat-card.c-purple .stat-icon { background: var(--purple-light); }
+.stat-card.c-pink .stat-icon   { background: var(--pink-light); }
+.stat-card.c-teal .stat-icon   { background: var(--teal-light); }
+.stat-card.c-blue .stat-icon   { background: var(--blue-light); }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+.stat-value { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.stat-card.c-purple .stat-value { color: var(--purple); }
+.stat-card.c-pink .stat-value   { color: var(--pink); }
+.stat-card.c-teal .stat-value   { color: var(--teal); }
+.stat-card.c-blue .stat-value   { color: var(--blue); }
+.stat-sub { font-size: 11px; color: var(--text-faint); margin-top: 5px; }
+
+/* BREAKDOWN */
+.breakdown-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1.5px solid var(--border);
+}
+.breakdown-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.breakdown-title {
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  transition: transform 0.1s;
+  cursor: default;
+}
+.chip:hover { transform: scale(1.04); }
+.chip-blog   { background: #eef2ff; color: #3730a3; }
+.chip-help   { background: #d1fae5; color: #065f46; }
+.chip-comm   { background: #fff7ed; color: #92400e; }
+.chip-assess { background: #fdf4ff; color: #6b21a8; }
+.chip-elearn { background: #dbeafe; color: #1e3a8a; }
+.chip-nism   { background: #fef9c3; color: #78350f; }
+.chip-sales  { background: #ffe4e6; color: #9f1239; }
+.chip-adhoc  { background: #f1f5f9; color: #334155; }
+.chip-count {
+  font-size: 13px; font-weight: 800;
+  background: rgba(0,0,0,0.08);
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+
+/* PANEL */
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+}
+
+.panel-top {
+  padding: 1rem 1.5rem;
+  border-bottom: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+}
+.panel-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.panel-count {
+  display: inline-flex; align-items: center;
+  background: var(--purple-light); color: var(--purple-dark);
+  font-size: 11px; font-weight: 700;
+  padding: 2px 9px; border-radius: 20px; margin-left: 8px;
+}
+
+/* FILTERS */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+select {
+  padding: 7px 30px 7px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; outline: none;
+  appearance: none; -webkit-appearance: none;
+  font-family: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a5f7a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.15s;
+}
+select:focus { border-color: var(--purple); }
+
+/* QUICK ADD */
+.quick-add {
+  padding: 14px 1.5rem;
+  border-bottom: 1.5px solid var(--border);
+  display: flex; gap: 10px; align-items: center;
+  background: linear-gradient(135deg, #faf5ff, #fff);
+}
+.qa-wrap {
+  flex: 1; display: flex; align-items: center;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.qa-wrap:focus-within {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+.qa-icon { padding: 0 10px 0 14px; font-size: 16px; color: var(--text-faint); }
+.qa-wrap input {
+  flex: 1; padding: 10px 12px 10px 0;
+  border: none; outline: none;
+  font-size: 13px; font-weight: 500;
+  color: var(--text); font-family: inherit;
+  background: transparent;
+}
+.qa-wrap input::placeholder { color: var(--text-faint); font-weight: 400; }
+
+/* BUTTONS */
+.btn {
+  padding: 8px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border); background: #fff;
+  color: var(--text); white-space: nowrap; font-family: inherit;
+  transition: all 0.15s; line-height: 1.4; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn:hover { background: #f8f5ff; border-color: #c4b5fd; color: var(--purple); }
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff; border-color: transparent;
+}
+.btn-primary:hover { opacity: 0.9; background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border-color: transparent; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-white { background: rgba(255,255,255,0.2); color: #fff; border-color: rgba(255,255,255,0.3); }
+.btn-white:hover { background: rgba(255,255,255,0.3); color: #fff; border-color: rgba(255,255,255,0.4); }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: #f8f5ff; border-color: #e9d5ff; color: var(--purple); }
+.btn-danger { color: var(--red); border-color: transparent; background: transparent; }
+.btn-danger:hover { background: var(--red-light); border-color: #fca5a5; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 10px 16px;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  text-align: left; white-space: nowrap;
+  border-bottom: 1.5px solid var(--border);
+  background: #fdfaff;
+}
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f2ff;
+  vertical-align: middle; font-size: 13px;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.1s; }
+tbody tr:hover td { background: #faf5ff; }
+
+.t-name { font-weight: 600; max-width: 260px; color: var(--text); }
+.t-date { white-space: nowrap; color: var(--text-muted); font-size: 12px; }
+.t-wc { color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+.t-aud { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.t-aud.int { color: var(--teal); }
+.t-aud.ext { color: var(--pink); }
+.t-link a { font-size: 12px; font-weight: 600; color: var(--purple); text-decoration: none; }
+.t-link a:hover { text-decoration: underline; }
+.t-actions { display: flex; gap: 4px; white-space: nowrap; }
+
+/* TYPE TAGS */
+.tag {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.tag-blog   { background: #eef2ff; color: #3730a3; }
+.tag-help   { background: #d1fae5; color: #065f46; }
+.tag-comm   { background: #fff7ed; color: #92400e; }
+.tag-assess { background: #fdf4ff; color: #6b21a8; }
+.tag-elearn { background: #dbeafe; color: #1e3a8a; }
+.tag-nism   { background: #fef9c3; color: #78350f; }
+.tag-sales  { background: #ffe4e6; color: #9f1239; }
+.tag-adhoc  { background: #f1f5f9; color: #334155; }
+
+/* STATUS */
+.status {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.s-wip    { background: #fff7ed; color: #92400e; }
+.s-wip::before { background: #f59e0b; }
+.s-review { background: #dbeafe; color: #1e3a8a; }
+.s-review::before { background: #3b82f6; }
+.s-done   { background: #d1fae5; color: #065f46; }
+.s-done::before { background: #10b981; }
+
+/* EMPTY */
+.empty { text-align: center; padding: 4rem 1rem; }
+.empty-img { font-size: 48px; margin-bottom: 12px; }
+.empty-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--text-faint); }
+
+/* SAVE BANNER */
+.save-banner {
+  display: none;
+  background: linear-gradient(135deg, #ede9fe, #fce7f3);
+  border: 1.5px solid #c4b5fd;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+  font-size: 13px; font-weight: 500; color: var(--purple-dark);
+  align-items: center; justify-content: space-between; gap: 12px;
+}
+.save-banner.on { display: flex; }
+.save-banner code {
+  background: rgba(124,58,237,0.12); padding: 1px 7px;
+  border-radius: 5px; font-size: 11px; font-family: monospace;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff; padding: 11px 18px; border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  z-index: 999; pointer-events: none;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+}
+.toast.on { opacity: 1; transform: translateY(0); }
+
+/* MODAL */
+.modal-wrap {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(26,26,46,0.5);
+  align-items: center; justify-content: center; padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+.modal-wrap.on { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  border: 1.5px solid var(--border);
+  width: 100%; max-width: 540px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(124,58,237,0.2);
+}
+.modal-head {
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  padding: 1.25rem 1.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+.modal-head h2 { font-size: 16px; font-weight: 700; color: #fff; }
+.modal-close {
+  background: rgba(255,255,255,0.2); border: none; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 50%;
+  font-size: 18px; color: #fff; display: flex;
+  align-items: center; justify-content: center; line-height: 1;
+  font-family: inherit; transition: background 0.15s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.35); }
+
+.modal-body { padding: 1.5rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fg.full { grid-column: 1 / -1; }
+.fg label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.fg label small { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--text-faint); font-size: 11px; }
+.fg input, .fg select {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; color: var(--text);
+  background: #fff; outline: none; font-family: inherit; width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.fg select { padding-right: 30px; }
+.fg input:focus, .fg select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+
+.modal-foot {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* PROGRESS BAR in breakdown */
+.progress-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.progress-bar { flex: 1; height: 5px; background: #f0f2ff; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+
+@media (max-width: 680px) {
+  .main { padding: 1rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .fg.full { grid-column: 1; }
+  thead th:nth-child(4), tbody td:nth-child(4),
+  thead th:nth-child(5), tbody td:nth-child(5) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="header-brand">✦ Work Tracker <span>·</span> Drashti</div>
+    <div class="header-sub">Additional work · Samco Securities</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-white btn-sm" onclick="exportJSON()">⬇ Export JSON</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="save-banner" id="saveBanner">
+    <span>💾 You have unsaved changes. Download the updated JSON and replace <code>data.json</code> in your GitHub repo.</span>
+    <button class="btn btn-primary btn-sm" onclick="exportJSON()">Download JSON</button>
+  </div>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <div class="breakdown-card">
+    <div class="breakdown-header">
+      <div class="breakdown-title">This month by type</div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-top">
+      <div style="display:flex;align-items:center;">
+        <span class="panel-title">All tasks</span>
+        <span class="panel-count" id="taskCount">0 tasks</span>
+      </div>
+      <div class="filters">
+        <select id="fMonth" onchange="renderTable()">
+          <option value="">All months</option>
+          <option value="2025-01">January</option>
+          <option value="2025-02">February</option>
+          <option value="2025-03">March</option>
+          <option value="2025-04">April</option>
+          <option value="2025-05">May</option>
+          <option value="2025-06">June</option>
+          <option value="2025-07">July</option>
+          <option value="2025-08">August</option>
+          <option value="2025-09">September</option>
+          <option value="2025-10">October</option>
+          <option value="2025-11">November</option>
+          <option value="2025-12">December</option>
+          <option value="2026-01">January</option>
+          <option value="2026-02">February</option>
+          <option value="2026-03">March</option>
+          <option value="2026-04">April</option>
+          <option value="2026-05">May</option>
+          <option value="2026-06">June</option>
+          <option value="2026-07">July</option>
+          <option value="2026-08">August</option>
+          <option value="2026-09">September</option>
+          <option value="2026-10">October</option>
+          <option value="2026-11">November</option>
+          <option value="2026-12">December</option>
+        </select>
+        <select id="fType" onchange="renderTable()">
+          <option value="">All types</option>
+          <option>Blog writing</option>
+          <option>Help article / FAQ</option>
+          <option>Internal communication</option>
+          <option>Assessment / question bank</option>
+          <option>E-course video</option>
+          <option>NISM / certification prep</option>
+          <option>Sales / comparison doc</option>
+          <option>Ad hoc</option>
+        </select>
+        <select id="fStatus" onchange="renderTable()">
+          <option value="">All status</option>
+          <option>WIP</option>
+          <option>Review</option>
+          <option>Done</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="quick-add">
+      <div class="qa-wrap">
+        <span class="qa-icon">✏️</span>
+        <input type="text" id="qaInput" placeholder="Type a task name and press Enter to add quickly..." />
+      </div>
+      <button class="btn btn-primary" id="qaBtn" onclick="quickAdd()">+ Add task</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Task name</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Audience</th>
+            <th>Words</th>
+            <th>Status</th>
+            <th>Link</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-wrap" id="modalWrap">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>✦ Edit task details</h2>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg full">
+          <label>Task name</label>
+          <input id="mName" type="text" placeholder="e.g. MTF Risk Help Article" />
+        </div>
+        <div class="fg">
+          <label>Task type</label>
+          <select id="mType">
+            <option value="">Select type</option>
+            <option>Blog writing</option>
+            <option>Help article / FAQ</option>
+            <option>Internal communication</option>
+            <option>Assessment / question bank</option>
+            <option>E-course video</option>
+            <option>NISM / certification prep</option>
+            <option>Sales / comparison doc</option>
+            <option>Ad hoc</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Status</label>
+          <select id="mStatus">
+            <option value="">Select status</option>
+            <option>WIP</option>
+            <option>Review</option>
+            <option>Done</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Date submitted <small>— when you submitted or completed it</small></label>
+          <input id="mDate" type="date" />
+        </div>
+        <div class="fg">
+          <label>Audience</label>
+          <select id="mAudience">
+            <option value="">Select audience</option>
+            <option>Internal</option>
+            <option>External</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>Word count <small>— leave blank if not applicable</small></label>
+          <input id="mWC" type="number" placeholder="e.g. 800" min="0" />
+        </div>
+        <div class="fg full">
+          <label>Link to doc <small>— Google Doc, Confluence, SharePoint, etc.</small></label>
+          <input id="mLink" type="url" placeholder="https://..." />
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">✓ Save task</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let tasks = [];
+let editingId = null;
+
+const TYPES = {
+  'Blog writing':               { cls: 'blog',    label: 'Blog',          icon: '✍️', chip: 'chip-blog',   bar: '#6366f1' },
+  'Help article / FAQ':         { cls: 'help',    label: 'Help article',  icon: '📖', chip: 'chip-help',   bar: '#10b981' },
+  'Internal communication':     { cls: 'comm',    label: 'Internal comm', icon: '💬', chip: 'chip-comm',   bar: '#f59e0b' },
+  'Assessment / question bank': { cls: 'assess',  label: 'Assessment',    icon: '📝', chip: 'chip-assess', bar: '#a855f7' },
+  'E-course video':             { cls: 'elearn',  label: 'E-course',      icon: '🎬', chip: 'chip-elearn', bar: '#3b82f6' },
+  'NISM / certification prep':  { cls: 'nism',    label: 'NISM prep',     icon: '🎓', chip: 'chip-nism',   bar: '#eab308' },
+  'Sales / comparison doc':     { cls: 'sales',   label: 'Sales doc',     icon: '📊', chip: 'chip-sales',  bar: '#f43f5e' },
+  'Ad hoc':                     { cls: 'adhoc',   label: 'Ad hoc',        icon: '⚡', chip: 'chip-adhoc',  bar: '#64748b' }
+};
+
+function genId() { return 'T' + Date.now() + Math.random().toString(36).slice(2,6); }
+function curMonth() { return new Date().toISOString().slice(0,7); }
+function fmtMonth(ym) {
+  if (!ym) return '';
+  const [y,m] = ym.split('-');
+  return new Date(+y,+m-1,1).toLocaleString('en-IN',{month:'long',year:'numeric'});
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return new Date(+y,+m-1,+day).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function init() {
+  try {
+    const r = await fetch('data.json?v=' + Date.now());
+    if (!r.ok) throw new Error();
+    const j = await r.json();
+    tasks = (j.tasks||[]).map(t => ({...t, id: t.id||genId()}));
+  } catch(e) { tasks = []; }
+  setDefaultMonth();
+  renderAll();
+}
+
+function setDefaultMonth() {
+  const sel = document.getElementById('fMonth');
+  const cm = curMonth();
+  const opt = sel.querySelector(`option[value="${cm}"]`);
+  if (opt) sel.value = cm;
+}
+
+function renderAll() { renderStats(); renderChips(); renderTable(); }
+
+function renderStats() {
+  const cm = curMonth();
+  const all = tasks;
+  const month = all.filter(t => (t.date||'').startsWith(cm));
+  const wc = month.reduce((s,t) => s+(parseInt(t.wordCount)||0), 0);
+  const done = month.filter(t => t.status==='Done').length;
+
+  document.getElementById('statRow').innerHTML = `
+    <div class="stat-card c-purple">
+      <div class="stat-icon">📋</div>
+      <div class="stat-label">Tasks this month</div>
+      <div class="stat-value">${month.length}</div>
+      <div class="stat-sub">${fmtMonth(cm)}</div>
+    </div>
+    <div class="stat-card c-pink">
+      <div class="stat-icon">✍️</div>
+      <div class="stat-label">Words this month</div>
+      <div class="stat-value">${wc.toLocaleString('en-IN')}</div>
+      <div class="stat-sub">writing tasks only</div>
+    </div>
+    <div class="stat-card c-teal">
+      <div class="stat-icon">✅</div>
+      <div class="stat-label">Completed</div>
+      <div class="stat-value">${done}</div>
+      <div class="stat-sub">of ${month.length} this month</div>
+    </div>
+    <div class="stat-card c-blue">
+      <div class="stat-icon">🗂️</div>
+      <div class="stat-label">All time</div>
+      <div class="stat-value">${all.length}</div>
+      <div class="stat-sub">total tasks tracked</div>
+    </div>
+  `;
+}
+
+function renderChips() {
+  const cm = curMonth();
+  const month = tasks.filter(t => (t.date||'').startsWith(cm));
+  const counts = {};
+  month.forEach(t => { if(t.type) counts[t.type] = (counts[t.type]||0)+1; });
+  const entries = Object.entries(counts);
+  const el = document.getElementById('chips');
+  if (!entries.length) {
+    el.innerHTML = '<span style="font-size:13px;color:var(--text-faint)">No tasks logged this month yet — add one below ↓</span>';
+    return;
+  }
+  el.innerHTML = entries.map(([type,n]) => {
+    const info = TYPES[type] || { icon:'⚡', chip:'chip-adhoc', label: type };
+    return `<span class="chip ${info.chip}">
+      <span class="chip-count">${n}</span>
+      ${info.icon} ${info.label}
+    </span>`;
+  }).join('');
+}
+
+function filtered() {
+  const m  = document.getElementById('fMonth').value;
+  const ty = document.getElementById('fType').value;
+  const st = document.getElementById('fStatus').value;
+  return tasks
+    .filter(t =>
+      (!m  || (t.date||'').startsWith(m)) &&
+      (!ty || t.type === ty) &&
+      (!st || t.status === st)
+    )
+    .sort((a,b) => (b.date||'').localeCompare(a.date||''));
+}
+
+function renderTable() {
+  const rows = filtered();
+  const countEl = document.getElementById('taskCount');
+  countEl.textContent = rows.length + ' task' + (rows.length!==1?'s':'');
+  const tbody = document.getElementById('tbody');
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty">
+        <div class="empty-img">🗂️</div>
+        <div class="empty-title">No tasks found</div>
+        <div class="empty-sub">Use the quick-add bar above or adjust your filters.</div>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(t => {
+    const info = TYPES[t.type] || { cls:'adhoc', label: t.type||'—' };
+    const sCls = t.status ? 's-'+t.status.toLowerCase() : '';
+    const audCls = t.audience === 'Internal' ? 'int' : t.audience === 'External' ? 'ext' : '';
+    return `<tr>
+      <td class="t-name">${esc(t.name||'Untitled')}</td>
+      <td>${t.type ? `<span class="tag tag-${info.cls}">${info.label}</span>` : '<span style="color:var(--text-faint)">—</span>'}</td>
+      <td class="t-date">${fmtDate(t.date)}</td>
+      <td class="t-aud ${audCls}">${esc(t.audience||'—')}</td>
+      <td class="t-wc">${t.wordCount ? parseInt(t.wordCount).toLocaleString('en-IN') : '—'}</td>
+      <td>${t.status ? `<span class="status ${sCls}">${t.status}</span>` : '<span style="color:var(--text-faint)">—</span>'}</td>
+      <td class="t-link">${t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener">↗ Open</a>` : '<span style="color:var(--text-faint)">—</span>'}</td>
+      <td>
+        <div class="t-actions">
+          <button class="btn btn-sm btn-ghost" onclick="openEdit('${t.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="delTask('${t.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function quickAdd() {
+  const inp = document.getElementById('qaInput');
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  const today = new Date().toISOString().slice(0,10);
+  const t = { id:genId(), name, type:'', date:today, status:'WIP', audience:'', wordCount:'', link:'' };
+  tasks.unshift(t);
+  inp.value = '';
+  markDirty();
+  renderAll();
+  openEdit(t.id);
+}
+
+document.getElementById('qaInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') quickAdd();
+});
+
+function openEdit(id) {
+  const t = tasks.find(x => x.id===id);
+  if (!t) return;
+  editingId = id;
+  document.getElementById('mName').value     = t.name || '';
+  document.getElementById('mType').value     = t.type || '';
+  document.getElementById('mDate').value     = t.date || '';
+  document.getElementById('mStatus').value   = t.status || '';
+  document.getElementById('mAudience').value = t.audience || '';
+  document.getElementById('mWC').value       = t.wordCount || '';
+  document.getElementById('mLink').value     = t.link || '';
+  document.getElementById('modalWrap').classList.add('on');
+  setTimeout(() => document.getElementById('mName').focus(), 50);
+}
+
+function closeModal() {
+  editingId = null;
+  document.getElementById('modalWrap').classList.remove('on');
+}
+
+function saveTask() {
+  const idx = tasks.findIndex(x => x.id===editingId);
+  if (idx===-1) return;
+  tasks[idx] = {
+    ...tasks[idx],
+    name:      document.getElementById('mName').value.trim() || 'Untitled',
+    type:      document.getElementById('mType').value,
+    date:      document.getElementById('mDate').value,
+    status:    document.getElementById('mStatus').value,
+    audience:  document.getElementById('mAudience').value,
+    wordCount: document.getElementById('mWC').value,
+    link:      document.getElementById('mLink').value.trim()
+  };
+  closeModal();
+  markDirty();
+  renderAll();
+  toast('Task saved ✓');
+}
+
+document.getElementById('modalWrap').addEventListener('click', function(e) {
+  if (e.target===this) closeModal();
+});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+function delTask(id) {
+  if (!confirm('Delete this task? This cannot be undone.')) return;
+  tasks = tasks.filter(t => t.id!==id);
+  markDirty();
+  renderAll();
+  toast('Task deleted');
+}
+
+function markDirty() {
+  document.getElementById('saveBanner').classList.add('on');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify({tasks},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  document.getElementById('saveBanner').classList.remove('on');
+  toast('data.json downloaded — push to GitHub to save permanently');
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2800);
+}
+
+init();
+</script>
+</body>
+</html>
